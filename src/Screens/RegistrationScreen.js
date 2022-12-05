@@ -22,12 +22,12 @@ import {
   
   const loadFonts = async () => {
     await Font.loadAsync({
-      "Roboto-Regular": require("./assets/Fonts/Roboto-Regular.ttf"),
-      "Roboto-Medium": require("./assets/Fonts/Roboto-Medium.ttf"),
+      "Roboto-Regular": require("../../assets/Fonts/Roboto-Regular.ttf"),
+      "Roboto-Medium": require("../../assets/Fonts/Roboto-Medium.ttf"),
     });
   };
   
-  export default function Registration() {
+  export default function Registration({navigation}) {
     const [state, setState] = useState(initialState)
     const [isLoaded, setIsLoaded] = useState(false)
     const [isShowKeyboard, setIsShowKeyboard] = useState(false)
@@ -44,7 +44,7 @@ import {
         if(state.email === '' || state.login === '' || state.password === ''){
             return
         }
-        
+
       console.log(state)
       Keyboard.dismiss()
       setState(initialState)
@@ -65,12 +65,12 @@ import {
     return (
       <TouchableWithoutFeedback onPress={keyboardHide} >
         <View style={styles.container}>
-          <ImageBackground source={require('./assets/Images/bg_photo.jpg')} style={styles.image}>
+          <ImageBackground source={require('../../assets/Images/bg_photo.jpg')} style={styles.image}>
             <View style={styles.form}>
               <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
                 <View style={styles.photoConatiner}>
                   <TouchableOpacity style={styles.btnAddPhoto}>
-                    <Image source={require('./assets/Images/add.png')} />
+                    <Image source={require('../../assets/Images/add.png')} />
                   </TouchableOpacity>
                 </View>
                 <View>
@@ -115,7 +115,10 @@ import {
                 <TouchableOpacity style={styles.button} onPress={onSubmit}>
                   <Text style={styles.buttonTitle}>Зарегистрироваться</Text>
                 </TouchableOpacity>
-                <Text style={styles.textLogIn}>Уже есть аккаунт? Войти</Text></>)}
+                <Text 
+                style={styles.textLogIn} 
+                onPress={()=>navigation.navigate('Login')}>Уже есть аккаунт? Войти</Text> 
+                </>)}
             </View>
           </ImageBackground>
   

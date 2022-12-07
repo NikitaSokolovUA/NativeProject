@@ -1,27 +1,31 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import Login from "./src/Screens/LoginScreen";
-import Registration from "./src/Screens/RegistrationScreen";
-import PostsScreen from './src/Screens/PostsScreen'
-import CreatePosts from "./src/Screens/CreatePostsScreen";
-import CommentsScreen from "./src/Screens/CommentsScreen";
-import ProfileScreen from "./src/Screens/ProfileScreen";
+import React from 'react';
+import { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import * as Font from 'expo-font';
+import AppLoading from 'expo-app-loading';
+import { useRoute } from './src/hooks/useRoute';
 
-const MainStack = createStackNavigator()
+const loadFonts = async () => {
+  await Font.loadAsync({
+    'Roboto-Regular': require('./assets/Fonts/Roboto-Regular.ttf'),
+    'Roboto-Medium': require('./assets/Fonts/Roboto-Medium.ttf'),
+    'Roboto-Bold': require('./assets/Fonts/Roboto-Bold.ttf'),
+  });
+};
 
 export default function App() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const routing = useRoute(true);
 
-  return <NavigationContainer>
-    <MainStack.Navigator initialRouteName="Profile">
-      <MainStack.Screen name="Login" component={Login}/>
-      <MainStack.Screen name="Registration" component={Registration}/>
-      <MainStack.Screen name='Posts' component={PostsScreen} />
-      <MainStack.Screen name='CreatePosts' component={CreatePosts} />
-      <MainStack.Screen name='Comments' component={CommentsScreen} />
-      <MainStack.Screen name='Profile' component={ProfileScreen} />
-    </MainStack.Navigator>
-  </NavigationContainer>
+  if (!isLoaded) {
+    return (
+      <AppLoading
+        startAsync={loadFonts}
+        onFinish={() => setIsLoaded(true)}
+        onError={console.warn}
+      />
+    );
+  }
 
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }
-

@@ -8,8 +8,8 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
-import Comment from '../Components/Comment';
-import Header from '../Components/Header';
+import Comment from '../../Components/Comment';
+import Header from '../../Components/Header';
 
 const initialComments = [
   {
@@ -25,18 +25,18 @@ export default function CommentsScreen() {
   const [comments, setComments] = useState(initialComments);
   const [comment, setComment] = useState('');
 
-  function addComment(){
-      const id = Math.random()
+  function addComment() {
+    const id = Math.random();
 
-      setComments(prevState=>([...prevState, {id, comment}]))
-      setComment('')
+    setComments(prevState => [...prevState, { id, comment }]);
+    setComment('');
   }
 
   return (
     <View style={styles.container}>
       <Header title={'Комментарии'}>
         <TouchableOpacity style={styles.backBtn}>
-          <Image source={require('../../assets/Images/arrow-left.png')} />
+          <Image source={require('../../../assets/Images/arrow-left.png')} />
         </TouchableOpacity>
       </Header>
       <View style={{ backgroundColor: '#FFFFFF', flex: 7 }}>
@@ -60,7 +60,10 @@ export default function CommentsScreen() {
             placeholder="Комментировать..."
           />
           <TouchableOpacity style={styles.addCommentBtn} onPress={addComment}>
-            <Image style={styles.addCommentBtn} source={require('../../assets/Images/Send.png')} />
+            <Image
+              style={styles.addCommentBtn}
+              source={require('../../../assets/Images/Send.png')}
+            />
           </TouchableOpacity>
         </View>
       </View>

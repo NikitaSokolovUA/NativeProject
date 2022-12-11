@@ -21,7 +21,7 @@ const initialStateFocus = {
   password: false,
 };
 
-export default function LoginScreen({ navigation, route }) {
+export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(true);
@@ -36,7 +36,6 @@ export default function LoginScreen({ navigation, route }) {
     if (state.email === '' || state.password === '') {
       return;
     }
-    console.log(route);
     console.log(state);
     Keyboard.dismiss();
     setState(initialState);

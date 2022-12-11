@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,24 +6,42 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-
 import Header from '../../Components/Header';
+import CreatePhotoForm from '../../Components/CreatePhotoForm';
 
-const initialValues = { title: '', location: '' };
+const initialPhotoInfo = {
+  photo: '',
+  title: '',
+  location: '',
+};
 
-export default function CreatePostsScreen() {
-  const [isSubmitBtnDisabled, setIsSubmitBtnDisabled] = useState(true);
+export default function CreatePostsScreen({ navigation }) {
+  const [photoInfo, setPhotoInfo] = useState(initialPhotoInfo);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [isPhotoLoaded, setIsPhotoLoaded] = useState(false);
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+
+  useEffect(() => {
+    const { photo, title, location } = photoInfo;
+
+    if (photo !== '' && title !== '' && location !== '') {
+      setIsBtnDisabled(false);
+    }
+  }, [photoInfo]);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
+
+  function addPost() {
+    navigation.navigate('Posts', { photoInfo });
+
+    setPhotoInfo(initialPhotoInfo);
+    keyboardHide();
+  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -36,40 +54,44 @@ export default function CreatePostsScreen() {
 
         <View style={styles.createSection}>
           {!isShowKeyboard && (
-            <View style={styles.loadedImg}>
-              <TouchableOpacity style={styles.addPhotoBtn}>
-                <Image source={require('../../../assets/Images/camera.png')} />
-              </TouchableOpacity>
-            </View>
+            <CreatePhotoForm photo={photoInfo.photo} setPhotoInfo={setPhotoInfo} />
           )}
-          <Text style={styles.description}>
-            {isPhotoLoaded ? 'Редактировать фото' : 'Загрузите фото'}
-          </Text>
           <View style={{ ...styles.inputForm, marginTop: 48 }}>
-            <TextInput onFocus={() => setIsShowKeyboard(true)} placeholder="Название..." />
+            <TextInput
+              onFocus={() => setIsShowKeyboard(true)}
+              value={photoInfo.title}
+              onChangeText={text => setPhotoInfo(prevState => ({ ...prevState, title: text }))}
+              placeholder="Название..."
+            />
           </View>
           <View style={{ ...styles.inputForm, marginTop: 32, flexDirection: 'row' }}>
-            <Image source={require('../../../assets/Images/map-pin.png')} />
+            <Image
+              source={require('../../../assets/Images/map-pin.png')}
+              style={{ width: 18, height: 18 }}
+            />
             <TextInput
               onFocus={() => setIsShowKeyboard(true)}
               style={styles.input}
+              value={photoInfo.location}
+              onChangeText={text => setPhotoInfo(prevState => ({ ...prevState, location: text }))}
               placeholder="Местность..."
             />
           </View>
           <TouchableOpacity
-            disabled={isSubmitBtnDisabled}
+            disabled={isBtnDisabled}
+            onPress={addPost}
             style={{
               ...styles.submitBtn,
-              backgroundColor: isSubmitBtnDisabled ? '#F6F6F6' : '#FF6C00',
+              backgroundColor: isBtnDisabled ? '#F6F6F6' : '#FF6C00',
             }}
           >
-            <Text style={{ color: isSubmitBtnDisabled ? '#BDBDBD' : '#FFFFFF' }}>Опубликовать</Text>
+            <Text style={{ color: isBtnDisabled ? '#BDBDBD' : '#FFFFFF' }}>Опубликовать</Text>
           </TouchableOpacity>
-          {/* <View style={styles.deleteBtnBox}>
-          <TouchableOpacity>
-          <Image source={require('../../../assets/Images/trash.png')} />
-          </TouchableOpacity>
-        </View> */}
+          <View style={styles.deleteBtnBox}>
+            <TouchableOpacity>
+              <Image source={require('../../../assets/Images/trash.png')} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -90,26 +112,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     border: 1,
     borderColor: 'tomato',
-  },
-  loadedImg: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F6F6F6',
-    height: 240,
-    marginTop: 20,
-    marginHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
-    borderRadius: 8,
-  },
-  addPhotoBtn: {
-    height: 60,
-    width: 60,
-  },
-  description: {
-    marginTop: 8,
-    marginLeft: 16,
-    color: '#BDBDBD',
   },
   inputForm: {
     marginHorizontal: 16,

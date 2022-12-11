@@ -14,31 +14,18 @@ const MainTab = createBottomTabNavigator();
 export function useRoute(isAuth) {
   if (!isAuth) {
     return (
-      <AuthStack.Navigator initialRouteName="Registration">
-        <AuthStack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Registration"
-          component={Registration}
-        />
-        <AuthStack.Screen options={{ headerShown: false }} name="Home" component={Home} />
+      <AuthStack.Navigator initialRouteName="Registration" screenOptions={{ headerShown: false }}>
+        <AuthStack.Screen name="Login" component={LoginScreen} />
+        <AuthStack.Screen name="Registration" component={Registration} />
+        <AuthStack.Screen name="Home" component={Home} />
       </AuthStack.Navigator>
     );
   }
 
   return (
-    <MainTab.Navigator
-      tabBarOptions={{ showLabel: false }}
-      screenOptions={({ route, navigation }) => {
-        console.log(navigation);
-        // if (route.name === 'CreatePosts') {
-        //   console.log('hurrey');
-        // }
-      }}
-    >
+    <MainTab.Navigator tabBarOptions={{ showLabel: false }} screenOptions={{ headerShown: false }}>
       <MainTab.Screen
         options={{
-          headerShown: false,
           tabBarIcon: () => <Image source={require('../../assets/Images/grid.png')} />,
         }}
         name="Posts"
@@ -46,7 +33,6 @@ export function useRoute(isAuth) {
       />
       <MainTab.Screen
         options={{
-          headerShown: false,
           tabBarLabel: false,
           tabBarIcon: () => (
             <View style={styles.addBtn}>
@@ -59,7 +45,6 @@ export function useRoute(isAuth) {
       />
       <MainTab.Screen
         options={{
-          headerShown: false,
           tabBarIcon: () => <Image source={require('../../assets/Images/user.png')} />,
         }}
         name="Profile"

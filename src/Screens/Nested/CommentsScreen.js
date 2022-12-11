@@ -5,8 +5,10 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  ScrollView,
+  TouchableWithoutFeedback,
   TextInput,
+  KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import Comment from '../../Components/Comment';
 import Header from '../../Components/Header';
@@ -22,52 +24,70 @@ const initialComments = [
 ];
 
 export default function CommentsScreen() {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [comments, setComments] = useState(initialComments);
   const [comment, setComment] = useState('');
 
   function addComment() {
     const id = Math.random();
 
+    if (comment === '') {
+      return;
+    }
+
     setComments(prevState => [...prevState, { id, comment }]);
     setComment('');
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
   }
 
   return (
-    <View style={styles.container}>
-      <Header title={'Комментарии'}>
-        <TouchableOpacity style={styles.backBtn}>
-          <Image source={require('../../../assets/Images/arrow-left.png')} />
-        </TouchableOpacity>
-      </Header>
-      <View style={{ backgroundColor: '#FFFFFF', flex: 7 }}>
-        <View style={styles.image}>
-          <Image />
-        </View>
-        {comments && (
-          <FlatList
-            style={styles.commentsContainer}
-            data={comments}
-            renderItem={({ item, index }) => <Comment item={item} index={index} />}
-            keyExtractor={item => item.id}
-          />
-        )}
-      </View>
-      <View style={styles.footer}>
-        <View style={styles.addCommentBox}>
-          <TextInput
-            value={comment}
-            onChangeText={text => setComment(text)}
-            placeholder="Комментировать..."
-          />
-          <TouchableOpacity style={styles.addCommentBtn} onPress={addComment}>
-            <Image
-              style={styles.addCommentBtn}
-              source={require('../../../assets/Images/Send.png')}
-            />
+    <TouchableWithoutFeedback>
+      <View style={styles.container}>
+        <Header title={'Комментарии'}>
+          <TouchableOpacity style={styles.backBtn}>
+            <Image source={require('../../../assets/Images/arrow-left.png')} />
           </TouchableOpacity>
+        </Header>
+        <View style={{ backgroundColor: '#FFFFFF', flex: 7 }}>
+          {!isShowKeyboard && (
+            <View style={styles.image}>
+              <Image />
+            </View>
+          )}
+
+          {comments && (
+            <FlatList
+              style={styles.commentsContainer}
+              data={comments}
+              renderItem={({ item, index }) => <Comment item={item} index={index} />}
+              keyExtractor={item => item.id}
+            />
+          )}
         </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.footer}
+        >
+          <View>
+            <View style={styles.addCommentBox}>
+              <TextInput
+                value={comment}
+                onChangeText={text => setComment(text)}
+                placeholder="Комментировать..."
+                onFocus={() => setIsShowKeyboard(true)}
+              />
+              <TouchableOpacity style={styles.addCommentBtn} onPress={addComment}>
+                <Image
+                  style={styles.addCommentBtn}
+                  source={require('../../../assets/Images/Send.png')}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 

@@ -23,7 +23,7 @@ const initialComments = [
   { id: 4, comment: 'Please don`t' },
 ];
 
-export default function CommentsScreen() {
+export default function CommentsScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [comments, setComments] = useState(initialComments);
   const [comment, setComment] = useState('');
@@ -41,11 +41,17 @@ export default function CommentsScreen() {
     Keyboard.dismiss();
   }
 
+  function goBack() {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  }
+
   return (
     <TouchableWithoutFeedback>
       <View style={styles.container}>
         <Header title={'Комментарии'}>
-          <TouchableOpacity style={styles.backBtn}>
+          <TouchableOpacity style={styles.backBtn} onPress={goBack}>
             <Image source={require('../../../assets/Images/arrow-left.png')} />
           </TouchableOpacity>
         </Header>

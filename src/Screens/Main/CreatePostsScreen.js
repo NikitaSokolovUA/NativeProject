@@ -23,6 +23,8 @@ export default function CreatePostsScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
+  console.log(navigation);
+
   useEffect(() => {
     const { photo, title, location } = photoInfo;
 
@@ -43,11 +45,17 @@ export default function CreatePostsScreen({ navigation }) {
     keyboardHide();
   }
 
+  function goBack() {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  }
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <Header title={'Создать публикацию'}>
-          <TouchableOpacity style={styles.backBtn}>
+          <TouchableOpacity style={styles.backBtn} onPress={goBack}>
             <Image source={require('../../../assets/Images/arrow-left.png')} />
           </TouchableOpacity>
         </Header>

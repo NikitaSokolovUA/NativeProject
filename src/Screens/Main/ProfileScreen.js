@@ -8,7 +8,10 @@ import {
   Image,
   FlatList,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import GalleryItem from '../../Components/GalleryItem';
+import { authSignOut } from '../../redux/auth/authOperations';
+import { selectUserNickname } from '../../redux/auth/authSelectors';
 
 const initialGallery = [
   { id: 1, title: 'In the forest', likes: 10, comments: 4, location: 'Ukraine' },
@@ -17,6 +20,8 @@ const initialGallery = [
 ];
 
 export default function ProfileScreen() {
+  const username = useSelector(selectUserNickname);
+  const dispatch = useDispatch();
   const [gallery, setGallery] = useState(initialGallery);
 
   return (
@@ -24,16 +29,23 @@ export default function ProfileScreen() {
       <ImageBackground source={require('../../../assets/Images/bg_photo.jpg')} style={styles.image}>
         <View style={{ flex: 2 }}></View>
         <View style={styles.form}>
-          <TouchableOpacity style={styles.backBtn}>
-            <Image source={require('../../../assets/Images/log-out.png')} />
-          </TouchableOpacity>
           {gallery && (
             <FlatList
               data={gallery}
               renderItem={({ item, index }) => (
                 <>
-                  {index === 0 && <Text style={styles.title}>Sokolov Mykyta</Text>}
-                  <GalleryItem item={item} title={'Sokolov Mykyta'} />
+                  {index === 0 && (
+                    <>
+                      <TouchableOpacity
+                        style={styles.backBtn}
+                        onPress={() => dispatch(authSignOut())}
+                      >
+                        <Image source={require('../../../assets/Images/log-out.png')} />
+                      </TouchableOpacity>
+                      <Text style={styles.title}>{username}</Text>
+                    </>
+                  )}
+                  <GalleryItem item={item} />
                 </>
               )}
               keyExtractor={item => item.id}

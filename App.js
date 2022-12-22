@@ -1,9 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
-import { useRoute } from './src/hooks/useRoute';
+import { Provider } from 'react-redux';
+import { store } from './src/redux/store';
+import Main from './src/Components/Main';
 
 const loadFonts = async () => {
   await Font.loadAsync({
@@ -15,7 +16,6 @@ const loadFonts = async () => {
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const routing = useRoute(true);
 
   if (!isLoaded) {
     return (
@@ -27,5 +27,9 @@ export default function App() {
     );
   }
 
-  return <NavigationContainer>{routing}</NavigationContainer>;
+  return (
+    <Provider store={store}>
+      <Main />
+    </Provider>
+  );
 }

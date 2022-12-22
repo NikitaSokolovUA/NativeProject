@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, FlatList, Button } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../../Components/Header';
 import Post from '../../Components/Post';
+import { authSignOut } from '../../redux/auth/authOperations';
+import { selectUserEmail, selectUserNickname } from '../../redux/auth/authSelectors';
 
 const initialGallery = [
   { photo: '../../assets/splash.png', title: 'In the forest', location: 'Irpin' },
@@ -10,7 +13,11 @@ const initialGallery = [
 ];
 
 export default function Home({ navigation, route }) {
+  const dispatch = useDispatch();
   const [posts, setPosts] = useState([...initialGallery]);
+
+  const email = useSelector(selectUserEmail);
+  const nickname = useSelector(selectUserNickname);
 
   useEffect(() => {
     if (route.params) {
@@ -21,7 +28,7 @@ export default function Home({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Header title={'Публикации'}>
-        <TouchableOpacity style={styles.logoutBtn}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => dispatch(authSignOut())}>
           <Image source={require('../../../assets/Images/log-out.png')} />
         </TouchableOpacity>
       </Header>
@@ -29,8 +36,8 @@ export default function Home({ navigation, route }) {
         <View style={styles.user}>
           <Image style={styles.avatar} />
           <View style={styles.userInfo}>
-            <Text style={styles.name}>Sokolov Mykyta</Text>
-            <Text style={styles.email}>aaa@gmail.com</Text>
+            <Text style={styles.name}>{nickname}</Text>
+            <Text style={styles.email}>{email}</Text>
           </View>
         </View>
         {posts.length !== 0 && (

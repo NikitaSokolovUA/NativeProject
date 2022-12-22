@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useState } from 'react';
+import { authRegistration } from '../../redux/auth/authOperations';
+import { useDispatch } from 'react-redux';
 
 const initialState = {
   login: '',
@@ -25,6 +27,8 @@ const initialStateFocus = {
 };
 
 export default function Registration({ navigation }) {
+  const dispatch = useDispatch();
+
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(true);
@@ -40,7 +44,9 @@ export default function Registration({ navigation }) {
       return;
     }
 
-    console.log(state);
+    dispatch(authRegistration(state));
+
+  
     Keyboard.dismiss();
     setState(initialState);
     setIsShowKeyboard(false);

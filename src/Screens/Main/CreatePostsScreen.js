@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import Header from '../../Components/Header';
 import CreatePhotoForm from '../../Components/CreatePhotoForm';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 
 const initialPhotoInfo = {
   photo: '',
@@ -23,14 +25,14 @@ export default function CreatePostsScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
-  console.log(navigation);
-
   useEffect(() => {
     const { photo, title, location } = photoInfo;
 
     if (photo !== '' && title !== '' && location !== '') {
       setIsBtnDisabled(false);
     }
+
+    return () => setIsBtnDisabled(true);
   }, [photoInfo]);
 
   const keyboardHide = () => {
@@ -41,9 +43,24 @@ export default function CreatePostsScreen({ navigation }) {
   function addPost() {
     navigation.navigate('Posts', { photoInfo });
 
+    uploadPhotoOnServer();
     setPhotoInfo(initialPhotoInfo);
     keyboardHide();
   }
+
+  const uploadPhotoOnServer = async () => {
+    const responce = await fetch(photoInfo.photo);
+    const file = await responce.blob();
+    const unic = Date.now();
+
+    const storageRef = ref(storage, `photo/${unic}`);
+
+    const data = await uploadBytes(storageRef, file);
+
+    const url = await getDownloadURL(storageRef);
+
+    console.log('URL:    ', url);
+  };
 
   function goBack() {
     if (navigation.canGoBack()) {

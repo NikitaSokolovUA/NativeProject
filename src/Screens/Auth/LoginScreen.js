@@ -10,6 +10,8 @@ import {
   ImageBackground,
 } from 'react-native';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { authSignIn } from '../../redux/auth/authOperations';
 
 const initialState = {
   email: '',
@@ -22,6 +24,8 @@ const initialStateFocus = {
 };
 
 export default function LoginScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(true);
@@ -36,7 +40,9 @@ export default function LoginScreen({ navigation }) {
     if (state.email === '' || state.password === '') {
       return;
     }
-    console.log(state);
+
+    dispatch(authSignIn(state));
+
     Keyboard.dismiss();
     setState(initialState);
     setIsShowKeyboard(false);

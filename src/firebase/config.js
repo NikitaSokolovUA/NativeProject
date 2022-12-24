@@ -11,6 +11,7 @@ const firebaseConfig = {
   messagingSenderId: '14043611511',
   appId: '1:14043611511:web:c2886fc10050d56199a172',
   measurementId: 'G-7WXVDXYW08',
+  databaseURL: 'https://nativeproject-42d21-default-rtdb.europe-west1.firebasedatabase.app/',
 };
 
 const app = initializeApp(firebaseConfig);

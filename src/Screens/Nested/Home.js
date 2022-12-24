@@ -4,26 +4,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import Header from '../../Components/Header';
 import Post from '../../Components/Post';
 import { authSignOut } from '../../redux/auth/authOperations';
-import { selectUserEmail, selectUserNickname } from '../../redux/auth/authSelectors';
+import { selectUserEmail, selectUserId, selectUserNickname } from '../../redux/auth/authSelectors';
+import { fetchPosts } from '../../redux/dashboard/dashboardOperations';
+import { selectPostsItems } from '../../redux/dashboard/dashboardSelectors';
 
-const initialGallery = [
-  { photo: '../../assets/splash.png', title: 'In the forest', location: 'Irpin' },
-  { photo: '../../assets/splash.png', title: 'In the forest', location: 'Ukraine/Kiev' },
-  //   { id: 3, title: 'Big kiss', likes: 35000, comments: 4, location: 'England' },
-];
+// const initialGallery = [
+//   { photo: '../../assets/splash.png', title: 'In the forest', location: 'Irpin' },
+//   { photo: '../../assets/splash.png', title: 'In the forest', location: 'Ukraine/Kiev' },
+//   //   { id: 3, title: 'Big kiss', likes: 35000, comments: 4, location: 'England' },
+// ];
 
 export default function Home({ navigation, route }) {
   const dispatch = useDispatch();
-  const [posts, setPosts] = useState([...initialGallery]);
+  // const [posts, setPosts] = useState([...initialGallery]);
 
+  const posts = useSelector(selectPostsItems);
+
+  const userId = useSelector(selectUserId);
   const email = useSelector(selectUserEmail);
   const nickname = useSelector(selectUserNickname);
 
+  // useEffect(() => {
+  //   if (route.params) {
+  //     setPosts(prevState => [{ ...route.params.photoInfo }, ...prevState]);
+  //   }
+  // }, [route.params]);
+
   useEffect(() => {
-    if (route.params) {
-      setPosts(prevState => [{ ...route.params.photoInfo }, ...prevState]);
-    }
-  }, [route.params]);
+    dispatch(fetchPosts());
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -42,8 +51,9 @@ export default function Home({ navigation, route }) {
         </View>
         {posts.length !== 0 && (
           <FlatList
+            style={styles.list}
             data={posts}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={item => item.postId}
             renderItem={({ item }) => <Post item={item} navigation={navigation} />}
           />
         )}
@@ -89,5 +99,8 @@ const styles = StyleSheet.create({
     color: 'rgba(33, 33, 33, 0.8)',
     fontFamily: 'Roboto-Regular',
     fontSize: 11,
+  },
+  list: {
+    marginTop: 10,
   },
 });

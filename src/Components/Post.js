@@ -3,9 +3,9 @@ import { View, Image, Text, StyleSheet } from 'react-native';
 export default function Post({ item, navigation }) {
   return (
     <View style={styles.postContainer}>
-      <Image style={styles.image} source={{ uri: item.photo }} />
+      <Image style={styles.image} source={{ uri: item.data.imageUrl }} />
       <View>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title}>{item.data.title}</Text>
         <View style={styles.credentialsBox}>
           <View style={styles.commentsBox}>
             <Image
@@ -23,9 +23,9 @@ export default function Post({ item, navigation }) {
             />
             <Text
               style={styles.location}
-              onPress={() => navigation.navigate('Map', { location: item.location })}
+              onPress={() => navigation.navigate('Map', { location: item.data.location })}
             >
-              {item.location}
+              {item.data.location}
             </Text>
           </View>
         </View>

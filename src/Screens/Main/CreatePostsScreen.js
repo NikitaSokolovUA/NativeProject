@@ -11,8 +11,12 @@ import {
 } from 'react-native';
 import Header from '../../Components/Header';
 import CreatePhotoForm from '../../Components/CreatePhotoForm';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../firebase/config';
+import { ref, uploadBytes, getDownloadURL, set } from 'firebase/storage';
+import { db, storage } from '../../firebase/config';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserId } from '../../redux/auth/authSelectors';
+import { collection, addDoc } from 'firebase/firestore';
+import { createPost } from '../../redux/dashboard/dashboardOperations';
 
 const initialPhotoInfo = {
   photo: '',
@@ -24,6 +28,9 @@ export default function CreatePostsScreen({ navigation }) {
   const [photoInfo, setPhotoInfo] = useState(initialPhotoInfo);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+
+  const userId = useSelector(selectUserId);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const { photo, title, location } = photoInfo;
@@ -56,10 +63,29 @@ export default function CreatePostsScreen({ navigation }) {
     const storageRef = ref(storage, `photo/${unic}`);
 
     const data = await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
 
-    const url = await getDownloadURL(storageRef);
+    // uploadPostToServer(photoInfo.title, photoInfo.location, imageUrl, userId);
 
-    console.log('URL:    ', url);
+    dispatch(
+      createPost({ title: photoInfo.title, location: photoInfo.location, imageUrl, userId })
+    );
+  };
+
+  const uploadPostToServer = async (title, location, imageUrl, userId) => {
+    try {
+      const postId = Date.now();
+
+      const postRef = await addDoc(collection(db, `posts/${userId}/${postId}`), {
+        title,
+        location,
+        imageUrl,
+      });
+
+      console.log('Document written with ID: ', postRef);
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 
   function goBack() {

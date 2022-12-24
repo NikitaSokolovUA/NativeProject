@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserId } from '../../redux/auth/authSelectors';
 import { collection, addDoc } from 'firebase/firestore';
 import { createPost } from '../../redux/dashboard/dashboardOperations';
+import BtnBack from '../../Components/BtnBack';
 
 const initialPhotoInfo = {
   photo: '',
@@ -65,42 +66,16 @@ export default function CreatePostsScreen({ navigation }) {
     const data = await uploadBytes(storageRef, file);
     const imageUrl = await getDownloadURL(storageRef);
 
-    // uploadPostToServer(photoInfo.title, photoInfo.location, imageUrl, userId);
-
     dispatch(
       createPost({ title: photoInfo.title, location: photoInfo.location, imageUrl, userId })
     );
   };
 
-  const uploadPostToServer = async (title, location, imageUrl, userId) => {
-    try {
-      const postId = Date.now();
-
-      const postRef = await addDoc(collection(db, `posts/${userId}/${postId}`), {
-        title,
-        location,
-        imageUrl,
-      });
-
-      console.log('Document written with ID: ', postRef);
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
-
-  function goBack() {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    }
-  }
-
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <Header title={'Создать публикацию'}>
-          <TouchableOpacity style={styles.backBtn} onPress={goBack}>
-            <Image source={require('../../../assets/Images/arrow-left.png')} />
-          </TouchableOpacity>
+          <BtnBack navigation={navigation} />
         </Header>
 
         <View style={styles.createSection}>

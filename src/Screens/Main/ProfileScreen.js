@@ -15,7 +15,7 @@ import { selectUserNickname } from '../../redux/auth/authSelectors';
 
 const initialGallery = [
   { id: 1, title: 'In the forest', likes: 10, comments: 4, location: 'Ukraine' },
-  { id: 2, title: 'In the forest', likes: 345, comments: 31231, location: 'Ukraine/Kiev' },
+  // { id: 2, title: 'In the forest', likes: 345, comments: 31231, location: 'Ukraine/Kiev' },
   //   { id: 3, title: 'Big kiss', likes: 35000, comments: 4, location: 'England' },
 ];
 
@@ -27,7 +27,6 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../../assets/Images/bg_photo.jpg')} style={styles.image}>
-        <View style={{ flex: 2 }}></View>
         <View style={styles.form}>
           {gallery && (
             <FlatList

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,8 +10,21 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  addDoc,
+  collection,
+  getDoc,
+  getDocs,
+} from 'firebase/firestore';
+import BtnBack from '../../Components/BtnBack';
 import Comment from '../../Components/Comment';
 import Header from '../../Components/Header';
+import { useSelector } from 'react-redux';
+import { selectUserId } from '../../redux/auth/authSelectors';
+import { db } from '../../firebase/config';
 
 const initialComments = [
   {
@@ -23,51 +36,53 @@ const initialComments = [
   { id: 4, comment: 'Please don`t' },
 ];
 
-export default function CommentsScreen({ navigation }) {
+export default function CommentsScreen({ navigation, route }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [comments, setComments] = useState(initialComments);
+  const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
+  const userId = useSelector(selectUserId);
 
-  function addComment() {
-    const id = Math.random();
-
+  async function addComment() {
     if (comment === '') {
       return;
     }
 
-    setComments(prevState => [...prevState, { id, comment }]);
+    await addDoc(collection(db, `posts/${route.params.postId}/comments`), { userId, comment });
+    // setComments(prevState => [...prevState, { id, comment }]);
     setComment('');
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   }
 
-  function goBack() {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    }
-  }
+  useEffect(() => {
+    (async () => {
+      const fetchComments = await getDocs(collection(db, `posts/${route.params.postId}/comments`));
+
+      fetchComments.forEach(doc => {
+        setComments(prevState => [...prevState, { postId: doc.id, data: doc.data() }]);
+      });
+    })();
+  }, []);
 
   return (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback disabled={!isShowKeyboard} onPress={() => setIsShowKeyboard(false)}>
       <View style={styles.container}>
         <Header title={'Комментарии'}>
-          <TouchableOpacity style={styles.backBtn} onPress={goBack}>
-            <Image source={require('../../../assets/Images/arrow-left.png')} />
-          </TouchableOpacity>
+          <BtnBack navigation={navigation} />
         </Header>
         <View style={{ backgroundColor: '#FFFFFF', flex: 7 }}>
           {!isShowKeyboard && (
-            <View style={styles.image}>
-              <Image />
+            <View>
+              <Image style={styles.image} source={{ uri: route.params.imageUrl }} />
             </View>
           )}
 
-          {comments && (
+          {comments.length !== 0 && (
             <FlatList
               style={styles.commentsContainer}
               data={comments}
               renderItem={({ item, index }) => <Comment item={item} index={index} />}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.postId}
             />
           )}
         </View>
@@ -75,22 +90,22 @@ export default function CommentsScreen({ navigation }) {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.footer}
         >
-          <View>
-            <View style={styles.addCommentBox}>
-              <TextInput
-                value={comment}
-                onChangeText={text => setComment(text)}
-                placeholder="Комментировать..."
-                onFocus={() => setIsShowKeyboard(true)}
+          {/* <View> */}
+          <View style={styles.addCommentBox}>
+            <TextInput
+              value={comment}
+              onChangeText={text => setComment(text)}
+              placeholder="Комментировать..."
+              onFocus={() => setIsShowKeyboard(true)}
+            />
+            <TouchableOpacity style={styles.addCommentBtn} onPress={addComment}>
+              <Image
+                style={styles.addCommentBtn}
+                source={require('../../../assets/Images/Send.png')}
               />
-              <TouchableOpacity style={styles.addCommentBtn} onPress={addComment}>
-                <Image
-                  style={styles.addCommentBtn}
-                  source={require('../../../assets/Images/Send.png')}
-                />
-              </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           </View>
+          {/* </View> */}
         </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>
@@ -112,7 +127,6 @@ const styles = StyleSheet.create({
     height: 240,
     marginHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#F6F6F6',
   },
   footer: {
     flex: 1,

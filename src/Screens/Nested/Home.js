@@ -24,12 +24,6 @@ export default function Home({ navigation, route }) {
   const email = useSelector(selectUserEmail);
   const nickname = useSelector(selectUserNickname);
 
-  // useEffect(() => {
-  //   if (route.params) {
-  //     setPosts(prevState => [{ ...route.params.photoInfo }, ...prevState]);
-  //   }
-  // }, [route.params]);
-
   useEffect(() => {
     dispatch(fetchPosts());
   }, []);

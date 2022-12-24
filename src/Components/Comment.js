@@ -1,6 +1,7 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 export default function Comment({ item, index }) {
+  // console.log(item);
   const isEven = index % 2;
 
   return (
@@ -17,7 +18,7 @@ export default function Comment({ item, index }) {
           borderTopLeftRadius: isEven ? 6 : 0,
         }}
       >
-        <Text style={styles.comment}>{item.comment}</Text>
+        <Text style={styles.comment}>{item.data.comment}</Text>
         <Text style={{ ...styles.date, textAlign: isEven ? 'left' : 'right' }}>03.09.1992</Text>
       </View>
     </View>
@@ -25,9 +26,6 @@ export default function Comment({ item, index }) {
 }
 
 const styles = StyleSheet.create({
-  commentContainer: {
-    flexDirection: 'row',
-  },
   imageBox: {
     height: 28,
     width: 28,

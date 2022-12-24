@@ -1,4 +1,4 @@
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function Post({ item, navigation }) {
   return (
@@ -7,27 +7,29 @@ export default function Post({ item, navigation }) {
       <View>
         <Text style={styles.title}>{item.data.title}</Text>
         <View style={styles.credentialsBox}>
-          <View style={styles.commentsBox}>
+          <TouchableOpacity
+            style={styles.commentsBox}
+            onPress={() =>
+              navigation.navigate('Comments', { postId: item.postId, imageUrl: item.data.imageUrl })
+            }
+          >
             <Image
               source={require('../../assets/Images/shape-post.png')}
               style={{ width: 18, height: 18 }}
             />
-            <Text style={styles.comments} onPress={() => navigation.navigate('Comments')}>
-              0
-            </Text>
-          </View>
-          <View style={styles.locationBox}>
+            <Text style={styles.comments}>0</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.locationBox}
+            onPress={() => navigation.navigate('Map', { location: item.data.location })}
+          >
             <Image
               source={require('../../assets/Images/map-pin.png')}
               style={{ width: 16, height: 18 }}
             />
-            <Text
-              style={styles.location}
-              onPress={() => navigation.navigate('Map', { location: item.data.location })}
-            >
-              {item.data.location}
-            </Text>
-          </View>
+            <Text style={styles.location}>{item.data.location}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

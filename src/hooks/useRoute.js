@@ -23,7 +23,7 @@ export function useRoute(isAuth) {
   }
 
   return (
-    <MainTab.Navigator tabBarOptions={{ showLabel: false }} screenOptions={{ headerShown: false }}>
+    <MainTab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
       <MainTab.Screen
         options={{
           tabBarIcon: () => <Image source={require('../../assets/Images/grid.png')} />,

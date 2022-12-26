@@ -16,7 +16,6 @@ import { selectPostsItems } from '../../redux/dashboard/dashboardSelectors';
 
 export default function Home({ navigation, route }) {
   const dispatch = useDispatch();
-  // const [posts, setPosts] = useState([...initialGallery]);
 
   const posts = useSelector(selectPostsItems);
 

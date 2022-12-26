@@ -10,10 +10,10 @@ const dashboardSlice = createSlice({
       error: null,
     },
   },
-  extraReducers: {
-    [fetchPosts.fulfilled](state, action) {
+  extraReducers: builder => {
+    builder.addCase(fetchPosts.fulfilled, (state, action) => {
       state.posts.items = action.payload;
-    },
+    });
   },
 });
 

@@ -1,28 +1,54 @@
-import { Image, Text, View, StyleSheet } from 'react-native';
+import { collection, getCountFromServer } from 'firebase/firestore';
+import { Image, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { db } from '../firebase/config';
 
-export default function GalleryItem({ item }) {
+export default function GalleryItem({ item, navigation }) {
+  const [comments, setComments] = useState();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const responce = await getCountFromServer(collection(db, `posts/${item.postId}/comments`));
+        const count = await responce.data().count;
+
+        setComments(count);
+      } catch (e) {
+        console.log(e.message);
+      }
+    })();
+  }, []);
+
   return (
     <View style={styles.galleryContainer}>
-      <Image style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
+      <Image style={styles.image} source={{ uri: item.data.imageUrl }} />
+      <Text style={styles.title}>{item.data.title}</Text>
       <View style={styles.credentialsBox}>
         <View style={styles.statisticBox}>
-          <View style={{ ...styles.statisticBox, marginLeft: 3 }}>
+          <TouchableOpacity
+            style={{ ...styles.statisticBox, marginLeft: 3 }}
+            onPress={() =>
+              navigation.navigate('Comments', { postId: item.postId, imageUrl: item.data.imageUrl })
+            }
+          >
             <Image style={styles.icons} source={require('../../assets/Images/Shape.png')} />
-            <Text style={styles.statisticText}>{item.comments}</Text>
-          </View>
+            <Text style={styles.statisticText}>{comments || 0}</Text>
+          </TouchableOpacity>
           <View style={{ ...styles.statisticBox, marginLeft: 27 }}>
             <Image style={styles.icons} source={require('../../assets/Images/thumbs-up.png')} />
-            <Text style={styles.statisticText}>{item.likes}</Text>
+            <Text style={styles.statisticText}>{item.likes || 0}</Text>
           </View>
         </View>
-        <View style={styles.statisticBox}>
+        <TouchableOpacity
+          style={styles.statisticBox}
+          onPress={() => navigation.navigate('Map', { location: item.data.location })}
+        >
           <Image
             source={require('../../assets/Images/map-pin.png')}
             style={{ width: 24, height: 24 }}
           />
-          <Text style={styles.locationText}>{item.location}</Text>
-        </View>
+          <Text style={styles.locationText}>{item.data.location}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

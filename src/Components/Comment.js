@@ -1,8 +1,9 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
+import moment from 'moment';
 
 export default function Comment({ item, index }) {
-  // console.log(item);
   const isEven = index % 2;
+  const date = moment(item.data.date).format('DD MMMM  YYYY | hh:mm');
 
   return (
     <View style={{ flexDirection: isEven ? 'row-reverse' : 'row' }}>
@@ -19,7 +20,7 @@ export default function Comment({ item, index }) {
         }}
       >
         <Text style={styles.comment}>{item.data.comment}</Text>
-        <Text style={{ ...styles.date, textAlign: isEven ? 'left' : 'right' }}>03.09.1992</Text>
+        <Text style={{ ...styles.date, textAlign: isEven ? 'left' : 'right' }}>{date}</Text>
       </View>
     </View>
   );

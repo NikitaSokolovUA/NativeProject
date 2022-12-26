@@ -10,15 +10,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
-import {
-  doc,
-  updateDoc,
-  arrayUnion,
-  addDoc,
-  collection,
-  getDoc,
-  getDocs,
-} from 'firebase/firestore';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
 import BtnBack from '../../Components/BtnBack';
 import Comment from '../../Components/Comment';
 import Header from '../../Components/Header';
@@ -26,15 +18,7 @@ import { useSelector } from 'react-redux';
 import { selectUserId } from '../../redux/auth/authSelectors';
 import { db } from '../../firebase/config';
 
-const initialComments = [
-  {
-    id: 1,
-    comment: 'kill - kennThe borderRadius prop is used to give a curve from all the corners.',
-  },
-  { id: 2, comment: 'dont kill - kenny' },
-  { id: 3, comment: 'The borderRadius prop is used to give a curve from all the corners.' },
-  { id: 4, comment: 'Please don`t' },
-];
+import { useSortComments } from '../../hooks/useSort';
 
 export default function CommentsScreen({ navigation, route }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -46,23 +30,36 @@ export default function CommentsScreen({ navigation, route }) {
     if (comment === '') {
       return;
     }
+    date = Date.now();
 
-    await addDoc(collection(db, `posts/${route.params.postId}/comments`), { userId, comment });
-    // setComments(prevState => [...prevState, { id, comment }]);
+    await addDoc(collection(db, `posts/${route.params.postId}/comments`), {
+      userId,
+      comment,
+      date,
+    });
+
     setComment('');
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   }
 
   useEffect(() => {
-    (async () => {
-      const fetchComments = await getDocs(collection(db, `posts/${route.params.postId}/comments`));
+    if (comment === '') {
+      (async () => {
+        const fetchComments = await getDocs(
+          collection(db, `posts/${route.params.postId}/comments`)
+        );
 
-      fetchComments.forEach(doc => {
-        setComments(prevState => [...prevState, { postId: doc.id, data: doc.data() }]);
-      });
-    })();
-  }, []);
+        fetchComments.forEach(doc => {
+          setComments(prevState => [...prevState, { postId: doc.id, data: doc.data() }]);
+        });
+      })();
+    }
+
+    return () => {
+      setComments([]);
+    };
+  }, [comment]);
 
   return (
     <TouchableWithoutFeedback disabled={!isShowKeyboard} onPress={() => setIsShowKeyboard(false)}>
@@ -80,7 +77,7 @@ export default function CommentsScreen({ navigation, route }) {
           {comments.length !== 0 && (
             <FlatList
               style={styles.commentsContainer}
-              data={comments}
+              data={useSortComments(comments)}
               renderItem={({ item, index }) => <Comment item={item} index={index} />}
               keyExtractor={item => item.postId}
             />
@@ -90,7 +87,6 @@ export default function CommentsScreen({ navigation, route }) {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.footer}
         >
-          {/* <View> */}
           <View style={styles.addCommentBox}>
             <TextInput
               value={comment}
@@ -105,7 +101,6 @@ export default function CommentsScreen({ navigation, route }) {
               />
             </TouchableOpacity>
           </View>
-          {/* </View> */}
         </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>

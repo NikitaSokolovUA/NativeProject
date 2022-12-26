@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { db } from '../../firebase/config';
-import { collection, addDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 export const createPost = createAsyncThunk(
   'dashboard/createPost',

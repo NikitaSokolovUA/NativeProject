@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createPost, fetchPosts } from './dashboardOperations';
+import { fetchPosts } from './dashboardOperations';
 
 const dashboardSlice = createSlice({
   name: 'dashboard',
@@ -14,9 +14,6 @@ const dashboardSlice = createSlice({
     [fetchPosts.fulfilled](state, action) {
       state.posts.items = action.payload;
     },
-    // [createPost.fulfilled](state, { payload }) {
-    //   state.post.items.push({ payload });
-    // },
   },
 });
 
